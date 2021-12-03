@@ -1,3 +1,4 @@
-gcc -c program.S && ld program.o
-cat data.txt | ./a.out | hexyl
+mkdir bin
+gcc -c program.S -o ./bin/program.o && ld ./bin/program.o -o ./bin/program
+cat data.txt | ./bin/program | hexyl
 # gdb -ex start --args ./a.out
