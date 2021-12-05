@@ -16,7 +16,7 @@ __global__ void update_state(board_t* board, board_state_t* state, unsigned int 
 }
 
 __global__ void check_vertical(board_state_t* state, board_score_t* score) {
-	int yi = threadIdx.y;
+	int yi = threadIdx.x;
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		if (state[blockIdx.x].field[yi][i] == 0) {
 			return;
@@ -36,7 +36,7 @@ __global__ void check_horizontal(board_state_t* state, board_score_t* score) {
 }
 
 __global__ void calculate_score(board_t* board, board_state_t* state, board_score_t* score, unsigned int number) {
-	if (score[blockIdx.x].win == 0) {
+	if (score[blockIdx.x].win == 0 || score[blockIdx.x].score != 0) {
 		return;
 	}
 	unsigned int local = 0;
@@ -99,6 +99,7 @@ cudaError_t init_boards(board_t** l_boards, board_state_t** l_states, board_scor
 }
 
 cudaError_t update_boards(unsigned int number) {
+	//printf("Playing: %d\n", number);
 	dim3 blocks(board_count);
 	dim3 threads_full(5, 5);
 	dim3 threads_stripe(5);
@@ -117,12 +118,7 @@ cudaError_t update_boards(unsigned int number) {
 	if (status != cudaSuccess) {
 		printf("Error copying scores buffer: %d", status);
 	}
-	// printf("Last Error: %d\n", cudaGetLastError());
-	return status;
-}
 
-cudaError_t destroy_boards() {
-	cudaError_t status;
 	// Copy back result
 	for (int i = 0; i < board_count; i++) {
 		status = cudaMemcpy(states[i], (void*)((size_t)states_buffer + i * sizeof(board_state_t)), sizeof(board_state_t), cudaMemcpyDeviceToHost);
@@ -130,6 +126,13 @@ cudaError_t destroy_boards() {
 			printf("Error copying statebuffer: %d", status);
 		}
 	}
+
+	// printf("Last Error: %d\n", cudaGetLastError());
+	return status;
+}
+
+cudaError_t destroy_boards() {
+	cudaError_t status;
 
 	status = cudaFree(boards_buffer);
 	if (status != cudaSuccess) {
