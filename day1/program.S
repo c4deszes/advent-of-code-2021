@@ -118,7 +118,7 @@ _convert_forward:
 
     mov $1, %bx
     mov %bx, temp
-    mov $0, %di            # Initialize accumulate RDX = 0
+    mov $0, %rdi            # Initialize accumulate RDX = 0
 _convert_loop:
     mov (%rsi), %al    # Load Data DIL = *(RSI)
     mov temp, %bx

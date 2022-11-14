@@ -1,6 +1,6 @@
 #!/bin/bash
-ones=(0)
-zeros=(0)
+ones=(0)		#7 5 8 7 5
+zeros=(0)	#5 7 4 5 7
 while IFS= read -r LINE
 do
 	i=0
@@ -36,4 +36,4 @@ for ((i=0;i<LENGTH;i++)); do
 done
 g=$(echo "ibase=2; $GAMMA" | bc)
 m=$(echo "ibase=2; $EPSILON" | bc)
-echo "Solution1 = $[$g * $m]"
+echo $[$g * $m]
